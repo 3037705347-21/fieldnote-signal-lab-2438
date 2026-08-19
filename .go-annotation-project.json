@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "name": "fieldnote-signal-lab",
+  "summary": "面向野外研究团队的观测记录信号评估服务，帮助研究人员整理、标注和复核采样观察。",
+  "user_roles": [
+    "采样研究员",
+    "数据复核员",
+    "研究负责人"
+  ],
+  "entities": [
+    "Observation",
+    "Label",
+    "Review",
+    "SignalReport",
+    "SamplingWindow"
+  ],
+  "workflows": [
+    {
+      "id": "capture-observation",
+      "name": "登记观测记录",
+      "actor": "采样研究员",
+      "entry": "POST /api/v1/observations",
+      "steps": [
+        "提交观测时间、地点和原始描述",
+        "服务校验字段并保存记录"
+      ],
+      "success": "返回记录编号和初始状态",
+      "failure": "字段不完整时返回 400",
+      "verification": "创建后可通过详情接口读取"
+    },
+    {
+      "id": "label-observation",
+      "name": "补充观测标签",
+      "actor": "采样研究员",
+      "entry": "POST /api/v1/observations/{id}/labels",
+      "steps": [
+        "选择受控标签",
+        "服务归一化标签并附加到记录"
+      ],
+      "success": "标签集合含新增标签",
+      "failure": "未知记录或空标签被拒绝",
+      "verification": "详情接口返回标签"
+    },
+    {
+      "id": "review-signal",
+      "name": "复核信号报告",
+      "actor": "数据复核员",
+      "entry": "POST /api/v1/observations/{id}/review",
+      "steps": [
+        "提交复核结论和置信度",
+        "服务生成可解释的信号报告"
+      ],
+      "success": "报告显示复核状态和得分",
+      "failure": "置信度越界被拒绝",
+      "verification": "报告接口返回评分原因"
+    }
+  ],
+  "module_plan": [
+    {
+      "package": "cmd/api",
+      "workflow_ids": [
+        "capture-observation",
+        "label-observation",
+        "review-signal"
+      ]
+    },
+    {
+      "package": "internal/lab",
+      "workflow_ids": [
+        "capture-observation",
+        "label-observation",
+        "review-signal"
+      ]
+    }
+  ],
+  "interfaces": [
+    {
+      "name": "HTTP JSON API",
+      "workflow_ids": [
+        "capture-observation",
+        "label-observation",
+        "review-signal"
+      ]
+    },
+    {
+      "name": "read-only report endpoint",
+      "workflow_ids": [
+        "review-signal"
+      ]
+    }
+  ]
+}
