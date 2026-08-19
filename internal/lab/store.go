@@ -55,10 +55,5 @@ func (s *MemoryStore) List() []Observation {
 	return result
 }
 func cloneObservation(item Observation) Observation {
-	item.Labels = append([]string(nil), item.Labels...)
-	if item.Review != nil {
-		review := *item.Review
-		item.Review = &review
-	}
 	return item
 }
