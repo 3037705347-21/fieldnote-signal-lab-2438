@@ -34,6 +34,7 @@ type ReviewInput struct {
 	Confidence float64 `json:"confidence"`
 	Notes      string  `json:"notes"`
 }
+
 type Review struct {
 	Verdict    string    `json:"verdict"`
 	Confidence float64   `json:"confidence"`
