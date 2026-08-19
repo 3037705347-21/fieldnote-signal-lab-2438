@@ -25,13 +25,14 @@ func scoreObservation(item Observation) (int, []string) {
 	return score, reasons
 }
 func reviewScore(review Review) int {
-	if review.Verdict == "confirmed" {
+	switch strings.ToLower(strings.TrimSpace(review.Verdict)) {
+	case "confirmed":
 		return int(30 * review.Confidence)
-	}
-	if review.Verdict == "needs-followup" {
+	case "needs-followup":
 		return int(20 * review.Confidence)
+	default:
+		return 5
 	}
-	return 5
 }
 func scoreBand(score int) string {
 	if score >= 70 {

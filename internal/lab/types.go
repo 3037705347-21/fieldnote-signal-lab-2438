@@ -1,6 +1,9 @@
 package lab
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 type ObservationState string
 
@@ -34,6 +37,11 @@ type ReviewInput struct {
 	Confidence float64 `json:"confidence"`
 	Notes      string  `json:"notes"`
 }
+
+func (input ReviewInput) CanonicalVerdict() string {
+	return strings.ToLower(strings.TrimSpace(input.Verdict))
+}
+
 type Review struct {
 	Verdict    string    `json:"verdict"`
 	Confidence float64   `json:"confidence"`
