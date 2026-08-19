@@ -103,8 +103,9 @@ func (s *Service) Report(id string) (SignalReport, error) {
 	return SignalReport{ObservationID: item.ID, Score: score, Band: scoreBand(score), Reasons: reasons, GeneratedAt: nowUTC()}, nil
 }
 func hasLabel(item Observation, wanted string) bool {
+	wanted = normalizeFilterValue(wanted)
 	for _, label := range item.Labels {
-		if label == wanted {
+		if normalizeFilterValue(label) == wanted {
 			return true
 		}
 	}

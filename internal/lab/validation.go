@@ -62,7 +62,7 @@ func normalizeLabels(values []string) []string {
 	seen := map[string]bool{}
 	result := []string{}
 	for _, value := range values {
-		label := strings.ToLower(strings.TrimSpace(value))
+		label := normalizeFilterValue(value)
 		if label != "" && !seen[label] {
 			seen[label] = true
 			result = append(result, label)
