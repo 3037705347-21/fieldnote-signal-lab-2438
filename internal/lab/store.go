@@ -54,6 +54,20 @@ func (s *MemoryStore) List() []Observation {
 	sort.Slice(result, func(i, j int) bool { return result[i].ID < result[j].ID })
 	return result
 }
+// cloneObservation returns a deep copy of item so that the slices and pointers
+// reachable from an Observation returned to a caller cannot mutate the stored
+// record. Labels is copied to its own backing array, and Review is copied to a
+// fresh value with a new pointer. A nil Labels slice or Review stays nil so the
+// (nil vs. empty) distinction used in JSON output is preserved.
 func cloneObservation(item Observation) Observation {
-	return item
+	clone := item
+	if item.Labels != nil {
+		clone.Labels = make([]string, len(item.Labels))
+		copy(clone.Labels, item.Labels)
+	}
+	if item.Review != nil {
+		review := *item.Review
+		clone.Review = &review
+	}
+	return clone
 }
