@@ -52,6 +52,9 @@ type Catalog struct {
 	Tags     []string `json:"tags"`
 	Verdicts []string `json:"verdicts"`
 }
+
+func (c Catalog) HasTag(value string) bool { return contains(c.Tags, canonicalTag(value)) }
+
 type SamplingWindow struct {
 	Start time.Time `json:"start"`
 	End   time.Time `json:"end"`

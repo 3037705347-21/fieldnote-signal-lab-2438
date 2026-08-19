@@ -40,7 +40,7 @@ func validateLabels(c Catalog, values []string) ([]string, error) {
 		return nil, invalid("labels", "must contain at least one tag")
 	}
 	for _, label := range labels {
-		if !contains(c.Tags, label) {
+		if !c.HasTag(label) {
 			return nil, invalid("labels", "contains unsupported tag "+label)
 		}
 	}
@@ -62,7 +62,7 @@ func normalizeLabels(values []string) []string {
 	seen := map[string]bool{}
 	result := []string{}
 	for _, value := range values {
-		label := strings.ToLower(strings.TrimSpace(value))
+		label := canonicalTag(value)
 		if label != "" && !seen[label] {
 			seen[label] = true
 			result = append(result, label)
@@ -71,6 +71,7 @@ func normalizeLabels(values []string) []string {
 	sort.Strings(result)
 	return result
 }
+func canonicalTag(value string) string { return strings.ToLower(strings.TrimSpace(value)) }
 func contains(values []string, wanted string) bool {
 	for _, value := range values {
 		if value == wanted {
