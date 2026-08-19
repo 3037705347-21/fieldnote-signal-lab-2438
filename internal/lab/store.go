@@ -55,5 +55,5 @@ func (s *MemoryStore) List() []Observation {
 	return result
 }
 func cloneObservation(item Observation) Observation {
-	return item
+	return item.Clone()
 }

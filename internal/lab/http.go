@@ -64,7 +64,7 @@ func (s *Server) get(w http.ResponseWriter, r *http.Request) {
 		writeFailure(w, 404, err)
 		return
 	}
-	writeJSON(w, 200, item)
+	writeJSON(w, 200, item.Clone())
 }
 func (s *Server) labels(w http.ResponseWriter, r *http.Request) {
 	var input AddLabelsInput

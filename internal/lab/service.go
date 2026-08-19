@@ -34,7 +34,11 @@ func (s *Service) Create(input CreateObservationInput) (Observation, error) {
 	return item, nil
 }
 func (s *Service) Get(id string) (Observation, error) {
-	return s.store.Get(strings.ToLower(strings.TrimSpace(id)))
+	item, err := s.store.Get(strings.ToLower(strings.TrimSpace(id)))
+	if err != nil {
+		return Observation{}, err
+	}
+	return item.Clone(), nil
 }
 func (s *Service) List(site, state, tag string, limit int) (Page, error) {
 	target := ObservationState(strings.TrimSpace(state))

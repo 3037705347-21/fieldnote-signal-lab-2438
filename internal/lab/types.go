@@ -21,6 +21,15 @@ type Observation struct {
 	CreatedAt   time.Time        `json:"created_at"`
 	UpdatedAt   time.Time        `json:"updated_at"`
 }
+func (o Observation) Clone() Observation {
+	item := o
+	item.Labels = append([]string(nil), o.Labels...)
+	if o.Review != nil {
+		review := *o.Review
+		item.Review = &review
+	}
+	return item
+}
 type CreateObservationInput struct {
 	Site        string `json:"site"`
 	ObservedAt  string `json:"observed_at"`
