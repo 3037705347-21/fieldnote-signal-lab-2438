@@ -69,7 +69,7 @@ func (s *Service) AddLabels(id string, input AddLabelsInput) (Observation, error
 		return Observation{}, err
 	}
 	item.Labels = normalizeLabels(append(item.Labels, labels...))
-	if item.State == StateCaptured || item.State == StateReviewed {
+	if item.State == StateCaptured {
 		item.State = StateLabeled
 	}
 	item.UpdatedAt = nowUTC()
