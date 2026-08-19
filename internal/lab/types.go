@@ -61,6 +61,12 @@ type Page struct {
 	Items []Observation `json:"items"`
 	Total int           `json:"total"`
 }
+func (p *Page) Add(item Observation, limit int) {
+	p.Total++
+	if limit <= 0 || len(p.Items) < limit {
+		p.Items = append(p.Items, item)
+	}
+}
 type APIError struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`

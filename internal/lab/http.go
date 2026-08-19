@@ -37,13 +37,20 @@ func (s *Server) catalog(w http.ResponseWriter, r *http.Request) {
 }
 func (s *Server) list(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
-	limit, _ := strconv.Atoi(q.Get("limit"))
+	limit := parseListLimit(q.Get("limit"))
 	page, err := s.service.List(q.Get("site"), q.Get("state"), strings.ToLower(q.Get("tag")), limit)
 	if err != nil {
 		writeFailure(w, 400, err)
 		return
 	}
 	writeJSON(w, 200, page)
+}
+func parseListLimit(value string) int {
+	limit, err := strconv.Atoi(strings.TrimSpace(value))
+	if err != nil || limit < 0 {
+		return 0
+	}
+	return limit
 }
 func (s *Server) create(w http.ResponseWriter, r *http.Request) {
 	var input CreateObservationInput

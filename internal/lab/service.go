@@ -37,27 +37,18 @@ func (s *Service) Get(id string) (Observation, error) {
 	return s.store.Get(strings.ToLower(strings.TrimSpace(id)))
 }
 func (s *Service) List(site, state, tag string, limit int) (Page, error) {
-	target := ObservationState(strings.TrimSpace(state))
-	if target != "" && !validState(target) {
-		return Page{}, invalid("state", "is unsupported")
+	site, target, tag, err := normalizeListFilters(site, state, tag)
+	if err != nil {
+		return Page{}, err
 	}
-	result := []Observation{}
+	page := Page{Items: []Observation{}}
 	for _, item := range s.store.List() {
-		if site != "" && item.Site != site {
+		if !matchesListFilter(item, site, target, tag) {
 			continue
 		}
-		if target != "" && item.State != target {
-			continue
-		}
-		if tag != "" && !hasLabel(item, tag) {
-			continue
-		}
-		result = append(result, item)
-		if limit > 0 && len(result) >= limit {
-			break
-		}
+		page.Add(item, limit)
 	}
-	return Page{Items: result, Total: len(result)}, nil
+	return page, nil
 }
 func (s *Service) AddLabels(id string, input AddLabelsInput) (Observation, error) {
 	labels, err := validateLabels(s.catalog, input.Labels)

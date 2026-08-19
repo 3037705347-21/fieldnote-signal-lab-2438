@@ -82,3 +82,19 @@ func contains(values []string, wanted string) bool {
 func validState(state ObservationState) bool {
 	return state == StateCaptured || state == StateLabeled || state == StateReviewed
 }
+func normalizeListFilters(site, state, tag string) (string, ObservationState, string, error) {
+	target := ObservationState(strings.TrimSpace(state))
+	if target != "" && !validState(target) {
+		return "", "", "", invalid("state", "is unsupported")
+	}
+	return strings.TrimSpace(site), target, strings.ToLower(strings.TrimSpace(tag)), nil
+}
+func matchesListFilter(item Observation, site string, state ObservationState, tag string) bool {
+	if site != "" && item.Site != site {
+		return false
+	}
+	if state != "" && item.State != state {
+		return false
+	}
+	return tag == "" || hasLabel(item, tag)
+}
