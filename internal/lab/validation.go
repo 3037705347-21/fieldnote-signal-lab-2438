@@ -80,5 +80,6 @@ func contains(values []string, wanted string) bool {
 	return false
 }
 func validState(state ObservationState) bool {
+	state = ObservationState(normalizeStateFilter(string(state)))
 	return state == StateCaptured || state == StateLabeled || state == StateReviewed
 }

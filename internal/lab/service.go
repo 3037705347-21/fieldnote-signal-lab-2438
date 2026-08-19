@@ -37,7 +37,7 @@ func (s *Service) Get(id string) (Observation, error) {
 	return s.store.Get(strings.ToLower(strings.TrimSpace(id)))
 }
 func (s *Service) List(site, state, tag string, limit int) (Page, error) {
-	target := ObservationState(strings.TrimSpace(state))
+	target := ObservationState(normalizeStateFilter(state))
 	if target != "" && !validState(target) {
 		return Page{}, invalid("state", "is unsupported")
 	}

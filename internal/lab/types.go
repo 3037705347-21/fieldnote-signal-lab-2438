@@ -1,6 +1,9 @@
 package lab
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 type ObservationState string
 
@@ -64,4 +67,8 @@ type Page struct {
 type APIError struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
+}
+
+func normalizeStateFilter(value string) string {
+	return strings.ToLower(strings.TrimSpace(value))
 }
