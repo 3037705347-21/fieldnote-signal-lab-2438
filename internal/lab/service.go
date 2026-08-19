@@ -86,7 +86,7 @@ func (s *Service) Review(id string, input ReviewInput) (Observation, error) {
 	if err != nil {
 		return Observation{}, err
 	}
-	item.Review = &Review{Verdict: strings.TrimSpace(input.Verdict), Confidence: input.Confidence, Notes: strings.TrimSpace(input.Notes), ReviewedAt: nowUTC()}
+	item.Review = &Review{Verdict: normalizeVerdict(input.Verdict), Confidence: input.Confidence, Notes: strings.TrimSpace(input.Notes), ReviewedAt: nowUTC()}
 	item.State = StateReviewed
 	item.UpdatedAt = nowUTC()
 	if err = s.store.Update(item); err != nil {
