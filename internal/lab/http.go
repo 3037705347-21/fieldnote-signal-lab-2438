@@ -3,6 +3,7 @@ package lab
 import (
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -103,7 +104,17 @@ func (s *Server) report(w http.ResponseWriter, r *http.Request) {
 func decode(r *http.Request, target any) error {
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
-	return decoder.Decode(target)
+	if err := decoder.Decode(target); err != nil {
+		return err
+	}
+	// Reject a request body that carries more than a single JSON object, such
+	// as a client concatenating two objects in one submission. Anything past
+	// the first value must not be silently ignored.
+	var extra json.RawMessage
+	if err := decoder.Decode(&extra); !errors.Is(err, io.EOF) {
+		return invalid("body", "must contain exactly one JSON object")
+	}
+	return nil
 }
 func writeJSON(w http.ResponseWriter, status int, value any) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
