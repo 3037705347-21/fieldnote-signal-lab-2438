@@ -1,4 +1,4 @@
-# fieldnote-signal-lab-2438 Docker 交付说明
+# fieldnote-signal-lab__004 Docker 交付说明
 
 ## 项目概览
 - Go module: `example.com/fieldnote-signal-lab`
@@ -19,8 +19,8 @@ go run ./cmd/api
 ## Docker 构建
 
 ```bash
-./build_benzhi_docker.sh fieldnote-signal-lab-2438-benzhi linux/amd64
-docker run --rm -it fieldnote-signal-lab-2438-benzhi bash
+./build_benzhi_docker.sh fieldnote-signal-lab__004-benzhi linux/amd64
+docker run --rm -it fieldnote-signal-lab__004-benzhi bash
 ```
 
 ## 环境
