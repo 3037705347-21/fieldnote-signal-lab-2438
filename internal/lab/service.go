@@ -42,7 +42,14 @@ func (s *Service) List(site, state, tag string, limit int) (Page, error) {
 		return Page{}, invalid("state", "is unsupported")
 	}
 	result := []Observation{}
+	scanned := 0
 	for _, item := range s.store.List() {
+		if limit > 0 {
+			scanned++
+			if scanned > limit {
+				break
+			}
+		}
 		if site != "" && item.Site != site {
 			continue
 		}
@@ -53,9 +60,6 @@ func (s *Service) List(site, state, tag string, limit int) (Page, error) {
 			continue
 		}
 		result = append(result, item)
-		if limit > 0 && len(result) >= limit {
-			break
-		}
 	}
 	return Page{Items: result, Total: len(result)}, nil
 }
