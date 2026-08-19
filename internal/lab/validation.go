@@ -82,3 +82,22 @@ func contains(values []string, wanted string) bool {
 func validState(state ObservationState) bool {
 	return state == StateCaptured || state == StateLabeled || state == StateReviewed
 }
+func addLabels(item Observation, labels []string) Observation {
+	item.Labels = normalizeLabels(append(item.Labels, labels...))
+	if item.State == StateCaptured {
+		item.State = StateLabeled
+	}
+	item.UpdatedAt = nowUTC()
+	return item
+}
+func applyReview(item Observation, input ReviewInput) Observation {
+	item.Review = &Review{
+		Verdict:    strings.TrimSpace(input.Verdict),
+		Confidence: input.Confidence,
+		Notes:      strings.TrimSpace(input.Notes),
+		ReviewedAt: nowUTC(),
+	}
+	item.State = StateReviewed
+	item.UpdatedAt = nowUTC()
+	return item
+}

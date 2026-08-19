@@ -64,36 +64,29 @@ func (s *Service) AddLabels(id string, input AddLabelsInput) (Observation, error
 	if err != nil {
 		return Observation{}, err
 	}
-	item, err := s.Get(id)
+	var updated Observation
+	err = s.store.UpdateWith(strings.ToLower(strings.TrimSpace(id)), func(item Observation) (Observation, error) {
+		updated = addLabels(item, labels)
+		return updated, nil
+	})
 	if err != nil {
 		return Observation{}, err
 	}
-	item.Labels = normalizeLabels(append(item.Labels, labels...))
-	if item.State == StateCaptured {
-		item.State = StateLabeled
-	}
-	item.UpdatedAt = nowUTC()
-	if err = s.store.Update(item); err != nil {
-		return Observation{}, err
-	}
-	return item, nil
+	return updated, nil
 }
 func (s *Service) Review(id string, input ReviewInput) (Observation, error) {
 	if err := validateReview(s.catalog, input); err != nil {
 		return Observation{}, err
 	}
-	item, err := s.Get(id)
+	var updated Observation
+	err := s.store.UpdateWith(strings.ToLower(strings.TrimSpace(id)), func(item Observation) (Observation, error) {
+		updated = applyReview(item, input)
+		return updated, nil
+	})
 	if err != nil {
 		return Observation{}, err
 	}
-	item.Labels = nil
-	item.Review = &Review{Verdict: strings.TrimSpace(input.Verdict), Confidence: input.Confidence, Notes: strings.TrimSpace(input.Notes), ReviewedAt: nowUTC()}
-	item.State = StateReviewed
-	item.UpdatedAt = nowUTC()
-	if err = s.store.Update(item); err != nil {
-		return Observation{}, err
-	}
-	return item, nil
+	return updated, nil
 }
 func (s *Service) Report(id string) (SignalReport, error) {
 	item, err := s.Get(id)
