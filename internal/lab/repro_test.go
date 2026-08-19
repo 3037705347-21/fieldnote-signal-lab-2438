@@ -16,6 +16,9 @@ type labelBarrierStore struct {
 
 func (s *labelBarrierStore) Create(item Observation) error { return s.inner.Create(item) }
 func (s *labelBarrierStore) Update(item Observation) error  { return s.inner.Update(item) }
+func (s *labelBarrierStore) AddLabels(id string, labels []string) error {
+	return s.inner.AddLabels(id, labels)
+}
 func (s *labelBarrierStore) List() []Observation            { return s.inner.List() }
 func (s *labelBarrierStore) Get(id string) (Observation, error) {
 	item, err := s.inner.Get(id)
@@ -24,11 +27,14 @@ func (s *labelBarrierStore) Get(id string) (Observation, error) {
 	}
 	s.mu.Lock()
 	s.gets++
+	block := s.gets <= 2
 	if s.gets == 2 {
 		close(s.release)
 	}
 	s.mu.Unlock()
-	<-s.release
+	if block {
+		<-s.release
+	}
 	return item, nil
 }
 

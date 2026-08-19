@@ -71,6 +71,9 @@ func normalizeLabels(values []string) []string {
 	sort.Strings(result)
 	return result
 }
+func mergeLabels(existing, additions []string) []string {
+	return normalizeLabels(append(append([]string(nil), existing...), additions...))
+}
 func contains(values []string, wanted string) bool {
 	for _, value := range values {
 		if value == wanted {

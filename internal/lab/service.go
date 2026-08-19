@@ -64,19 +64,10 @@ func (s *Service) AddLabels(id string, input AddLabelsInput) (Observation, error
 	if err != nil {
 		return Observation{}, err
 	}
-	item, err := s.Get(id)
-	if err != nil {
+	if err = s.store.AddLabels(strings.ToLower(strings.TrimSpace(id)), labels); err != nil {
 		return Observation{}, err
 	}
-	item.Labels = normalizeLabels(append(item.Labels, labels...))
-	if item.State == StateCaptured {
-		item.State = StateLabeled
-	}
-	item.UpdatedAt = nowUTC()
-	if err = s.store.Update(item); err != nil {
-		return Observation{}, err
-	}
-	return item, nil
+	return s.Get(id)
 }
 func (s *Service) Review(id string, input ReviewInput) (Observation, error) {
 	if err := validateReview(s.catalog, input); err != nil {

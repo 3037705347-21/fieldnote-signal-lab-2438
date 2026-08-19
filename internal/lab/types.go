@@ -29,6 +29,12 @@ type CreateObservationInput struct {
 type AddLabelsInput struct {
 	Labels []string `json:"labels"`
 }
+func (o *Observation) ApplyLabels(labels []string) {
+	o.Labels = mergeLabels(o.Labels, labels)
+	if o.State == StateCaptured {
+		o.State = StateLabeled
+	}
+}
 type ReviewInput struct {
 	Verdict    string  `json:"verdict"`
 	Confidence float64 `json:"confidence"`

@@ -9,6 +9,7 @@ type Store interface {
 	Create(Observation) error
 	Get(string) (Observation, error)
 	Update(Observation) error
+	AddLabels(string, []string) error
 	List() []Observation
 }
 type MemoryStore struct {
@@ -42,6 +43,18 @@ func (s *MemoryStore) Update(item Observation) error {
 		return ErrNotFound
 	}
 	s.observations[item.ID] = cloneObservation(item)
+	return nil
+}
+func (s *MemoryStore) AddLabels(id string, labels []string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	item, ok := s.observations[id]
+	if !ok {
+		return ErrNotFound
+	}
+	item = cloneObservation(item)
+	item.ApplyLabels(labels)
+	s.observations[id] = cloneObservation(item)
 	return nil
 }
 func (s *MemoryStore) List() []Observation {
