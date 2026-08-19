@@ -43,7 +43,7 @@ func (s *Service) List(site, state, tag string, limit int) (Page, error) {
 	}
 	result := []Observation{}
 	for _, item := range s.store.List() {
-		if site != "" && item.Site != site {
+		if site != "" && !strings.EqualFold(strings.TrimSpace(item.Site), strings.TrimSpace(site)) {
 			continue
 		}
 		if target != "" && item.State != target {
