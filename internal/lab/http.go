@@ -85,6 +85,7 @@ func (s *Server) review(w http.ResponseWriter, r *http.Request) {
 		writeFailure(w, 400, err)
 		return
 	}
+	input = input.normalized()
 	item, err := s.service.Review(r.PathValue("id"), input)
 	if err != nil {
 		writeFailure(w, statusFor(err), err)

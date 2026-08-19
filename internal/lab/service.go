@@ -79,6 +79,7 @@ func (s *Service) AddLabels(id string, input AddLabelsInput) (Observation, error
 	return item, nil
 }
 func (s *Service) Review(id string, input ReviewInput) (Observation, error) {
+	input = input.normalized()
 	if err := validateReview(s.catalog, input); err != nil {
 		return Observation{}, err
 	}
@@ -86,7 +87,7 @@ func (s *Service) Review(id string, input ReviewInput) (Observation, error) {
 	if err != nil {
 		return Observation{}, err
 	}
-	item.Review = &Review{Verdict: strings.TrimSpace(input.Verdict), Confidence: input.Confidence, Notes: strings.TrimSpace(input.Notes), ReviewedAt: nowUTC()}
+	item.Review = &Review{Verdict: input.Verdict, Confidence: input.Confidence, Notes: input.Notes, ReviewedAt: nowUTC()}
 	item.State = StateReviewed
 	item.UpdatedAt = nowUTC()
 	if err = s.store.Update(item); err != nil {
