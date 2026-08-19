@@ -11,7 +11,7 @@ func scoreObservation(item Observation) (int, []string) {
 	} else {
 		reasons = append(reasons, "description is brief")
 	}
-	score += minInt(len(item.Labels)*12, 30)
+	score += minInt(len(item.Labels), 30)
 	if len(item.Labels) > 0 {
 		reasons = append(reasons, "controlled tags were attached")
 	}
