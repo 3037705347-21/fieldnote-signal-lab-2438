@@ -1,7 +1,9 @@
 package lab
 
 import (
+	"encoding/json"
 	"errors"
+	"io"
 	"math"
 	"sort"
 	"strings"
@@ -81,4 +83,24 @@ func contains(values []string, wanted string) bool {
 }
 func validState(state ObservationState) bool {
 	return state == StateCaptured || state == StateLabeled || state == StateReviewed
+}
+func normalizeCreateInput(input CreateObservationInput) CreateObservationInput {
+	input.Site = strings.TrimSpace(input.Site)
+	input.Description = strings.TrimSpace(input.Description)
+	return input
+}
+func decodeStrictJSON(body io.Reader, target any) error {
+	decoder := json.NewDecoder(io.LimitReader(body, maxJSONBodyBytes))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(target); err != nil {
+		return err
+	}
+	var extra any
+	if err := decoder.Decode(&extra); err != io.EOF {
+		if err == nil {
+			return errors.New("request body must contain one JSON value")
+		}
+		return err
+	}
+	return nil
 }

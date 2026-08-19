@@ -101,9 +101,7 @@ func (s *Server) report(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, 200, report)
 }
 func decode(r *http.Request, target any) error {
-	decoder := json.NewDecoder(r.Body)
-	decoder.DisallowUnknownFields()
-	return decoder.Decode(target)
+	return decodeStrictJSON(r.Body, target)
 }
 func writeJSON(w http.ResponseWriter, status int, value any) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")

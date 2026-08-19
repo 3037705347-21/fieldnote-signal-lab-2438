@@ -2,6 +2,8 @@ package lab
 
 import "time"
 
+const maxJSONBodyBytes = 1 << 20
+
 type ObservationState string
 
 const (

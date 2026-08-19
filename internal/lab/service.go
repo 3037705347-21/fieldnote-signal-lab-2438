@@ -22,12 +22,13 @@ func NewService(store Store, catalog Catalog) *Service {
 }
 func (s *Service) Catalog() Catalog { return s.catalog }
 func (s *Service) Create(input CreateObservationInput) (Observation, error) {
+	input = normalizeCreateInput(input)
 	observedAt, err := validateCreate(input)
 	if err != nil {
 		return Observation{}, err
 	}
 	now := nowUTC()
-	item := Observation{ID: fmt.Sprintf("obs-%06d", atomic.AddUint64(&sequence, 1)), Site: strings.TrimSpace(input.Site), ObservedAt: observedAt, Description: strings.TrimSpace(input.Description), State: StateCaptured, CreatedAt: now, UpdatedAt: now}
+	item := Observation{ID: fmt.Sprintf("obs-%06d", atomic.AddUint64(&sequence, 1)), Site: input.Site, ObservedAt: observedAt, Description: input.Description, State: StateCaptured, CreatedAt: now, UpdatedAt: now}
 	if err = s.store.Create(item); err != nil {
 		return Observation{}, err
 	}
