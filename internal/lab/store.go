@@ -51,8 +51,11 @@ func (s *MemoryStore) List() []Observation {
 	for _, item := range s.observations {
 		result = append(result, cloneObservation(item))
 	}
-	sort.Slice(result, func(i, j int) bool { return result[i].ID < result[j].ID })
+	sortObservations(result)
 	return result
+}
+func sortObservations(items []Observation) {
+	sort.Slice(items, func(i, j int) bool { return items[i].ID < items[j].ID })
 }
 func cloneObservation(item Observation) Observation {
 	item.Labels = append([]string(nil), item.Labels...)

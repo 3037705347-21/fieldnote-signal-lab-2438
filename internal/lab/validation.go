@@ -34,6 +34,16 @@ func validateCreate(input CreateObservationInput) (time.Time, error) {
 	}
 	return value.UTC(), nil
 }
+func newObservationFilter(site, state, tag string, limit int) (ObservationFilter, error) {
+	filter := ObservationFilter{Site: strings.TrimSpace(site), State: ObservationState(strings.TrimSpace(state)), Tag: strings.ToLower(strings.TrimSpace(tag)), Limit: limit}
+	if filter.State != "" && !validState(filter.State) {
+		return ObservationFilter{}, invalid("state", "is unsupported")
+	}
+	if filter.Limit < 0 {
+		return ObservationFilter{}, invalid("limit", "must not be negative")
+	}
+	return filter, nil
+}
 func validateLabels(c Catalog, values []string) ([]string, error) {
 	labels := normalizeLabels(values)
 	if len(labels) == 0 {

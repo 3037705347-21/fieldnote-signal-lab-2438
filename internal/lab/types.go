@@ -57,6 +57,13 @@ type SamplingWindow struct {
 	End   time.Time `json:"end"`
 	Site  string    `json:"site"`
 }
+type ObservationFilter struct {
+	Site  string
+	State ObservationState
+	Tag   string
+	Limit int
+}
+
 type Page struct {
 	Items []Observation `json:"items"`
 	Total int           `json:"total"`

@@ -37,7 +37,11 @@ func (s *Server) catalog(w http.ResponseWriter, r *http.Request) {
 }
 func (s *Server) list(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
-	limit, _ := strconv.Atoi(q.Get("limit"))
+	limit, err := parseListLimit(q.Get("limit"))
+	if err != nil {
+		writeFailure(w, http.StatusBadRequest, err)
+		return
+	}
 	page, err := s.service.List(q.Get("site"), q.Get("state"), strings.ToLower(q.Get("tag")), limit)
 	if err != nil {
 		writeFailure(w, 400, err)
@@ -99,6 +103,16 @@ func (s *Server) report(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, 200, report)
+}
+func parseListLimit(value string) (int, error) {
+	if strings.TrimSpace(value) == "" {
+		return 0, nil
+	}
+	limit, err := strconv.Atoi(value)
+	if err != nil || limit < 0 {
+		return 0, invalid("limit", "must be a non-negative integer")
+	}
+	return limit, nil
 }
 func decode(r *http.Request, target any) error {
 	decoder := json.NewDecoder(r.Body)
