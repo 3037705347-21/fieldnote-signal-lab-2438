@@ -36,28 +36,30 @@ func (s *Service) Create(input CreateObservationInput) (Observation, error) {
 func (s *Service) Get(id string) (Observation, error) {
 	return s.store.Get(strings.ToLower(strings.TrimSpace(id)))
 }
-func (s *Service) List(site, state, tag string, limit int) (Page, error) {
-	target := ObservationState(strings.TrimSpace(state))
+func (s *Service) List(query ObservationQuery) (Page, error) {
+	query = normalizeObservationQuery(query)
+	target := query.State
 	if target != "" && !validState(target) {
 		return Page{}, invalid("state", "is unsupported")
 	}
-	result := []Observation{}
+	matches := []Observation{}
 	for _, item := range s.store.List() {
-		if site != "" && item.Site != site {
+		if query.Site != "" && strings.ToLower(item.Site) != query.Site {
 			continue
 		}
 		if target != "" && item.State != target {
 			continue
 		}
-		if tag != "" && !hasLabel(item, tag) {
+		if query.Tag != "" && !hasLabel(item, query.Tag) {
 			continue
 		}
-		result = append(result, item)
-		if limit > 0 && len(result) >= limit {
-			break
-		}
+		matches = append(matches, item)
 	}
-	return Page{Items: result, Total: len(result)}, nil
+	items := matches
+	if query.Limit > 0 && len(items) > query.Limit {
+		items = items[:query.Limit]
+	}
+	return Page{Items: items, Total: len(matches)}, nil
 }
 func (s *Service) AddLabels(id string, input AddLabelsInput) (Observation, error) {
 	labels, err := validateLabels(s.catalog, input.Labels)

@@ -61,6 +61,12 @@ type Page struct {
 	Items []Observation `json:"items"`
 	Total int           `json:"total"`
 }
+type ObservationQuery struct {
+	Site  string
+	State ObservationState
+	Tag   string
+	Limit int
+}
 type APIError struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`

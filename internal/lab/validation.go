@@ -82,3 +82,9 @@ func contains(values []string, wanted string) bool {
 func validState(state ObservationState) bool {
 	return state == StateCaptured || state == StateLabeled || state == StateReviewed
 }
+func normalizeObservationQuery(query ObservationQuery) ObservationQuery {
+	query.Site = strings.ToLower(strings.TrimSpace(query.Site))
+	query.State = ObservationState(strings.ToLower(strings.TrimSpace(string(query.State))))
+	query.Tag = strings.ToLower(strings.TrimSpace(query.Tag))
+	return query
+}
