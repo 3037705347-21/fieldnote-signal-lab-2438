@@ -46,8 +46,9 @@ func validateLabels(c Catalog, values []string) ([]string, error) {
 	}
 	return labels, nil
 }
+func canonicalVerdict(value string) string { return strings.ToLower(strings.TrimSpace(value)) }
 func validateReview(c Catalog, input ReviewInput) error {
-	if !contains(c.Verdicts, strings.TrimSpace(input.Verdict)) {
+	if !contains(c.Verdicts, canonicalVerdict(input.Verdict)) {
 		return invalid("verdict", "is unsupported")
 	}
 	if math.IsNaN(input.Confidence) || math.IsInf(input.Confidence, 0) || input.Confidence < 0 || input.Confidence > 1 {

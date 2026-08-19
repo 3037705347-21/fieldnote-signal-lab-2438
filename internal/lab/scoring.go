@@ -31,7 +31,7 @@ func reviewScore(review Review) int {
 	if review.Verdict == "needs-followup" {
 		return int(20 * review.Confidence)
 	}
-	return 5
+	return 0
 }
 func scoreBand(score int) string {
 	if score >= 70 {

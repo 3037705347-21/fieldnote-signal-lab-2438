@@ -86,7 +86,7 @@ func (s *Service) Review(id string, input ReviewInput) (Observation, error) {
 	if err != nil {
 		return Observation{}, err
 	}
-	item.Review = &Review{Verdict: strings.TrimSpace(input.Verdict), Confidence: input.Confidence, Notes: strings.TrimSpace(input.Notes), ReviewedAt: nowUTC()}
+	item.Review = &Review{Verdict: canonicalVerdict(input.Verdict), Confidence: input.Confidence, Notes: strings.TrimSpace(input.Notes), ReviewedAt: nowUTC()}
 	item.State = StateReviewed
 	item.UpdatedAt = nowUTC()
 	if err = s.store.Update(item); err != nil {
@@ -100,7 +100,11 @@ func (s *Service) Report(id string) (SignalReport, error) {
 		return SignalReport{}, err
 	}
 	score, reasons := scoreObservation(item)
-	return SignalReport{ObservationID: item.ID, Score: score, Band: scoreBand(score), Reasons: reasons, GeneratedAt: nowUTC()}, nil
+	verdict := ""
+	if item.Review != nil {
+		verdict = item.Review.Verdict
+	}
+	return SignalReport{ObservationID: item.ID, Score: score, Band: scoreBand(score), Reasons: reasons, ReviewVerdict: verdict, GeneratedAt: nowUTC()}, nil
 }
 func hasLabel(item Observation, wanted string) bool {
 	for _, label := range item.Labels {

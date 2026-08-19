@@ -98,6 +98,9 @@ func (s *Server) report(w http.ResponseWriter, r *http.Request) {
 		writeFailure(w, 404, err)
 		return
 	}
+	if report.ReviewVerdict == "rejected" {
+		w.Header().Set("X-Signal-Review", "rejected")
+	}
 	writeJSON(w, 200, report)
 }
 func decode(r *http.Request, target any) error {

@@ -45,6 +45,7 @@ type SignalReport struct {
 	Score         int       `json:"score"`
 	Band          string    `json:"band"`
 	Reasons       []string  `json:"reasons"`
+	ReviewVerdict string    `json:"review_verdict,omitempty"`
 	GeneratedAt   time.Time `json:"generated_at"`
 }
 type Catalog struct {
