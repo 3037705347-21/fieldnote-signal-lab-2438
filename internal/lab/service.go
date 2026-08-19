@@ -41,6 +41,7 @@ func (s *Service) List(site, state, tag string, limit int) (Page, error) {
 	if target != "" && !validState(target) {
 		return Page{}, invalid("state", "is unsupported")
 	}
+	tag = strings.ToLower(strings.TrimSpace(tag))
 	result := []Observation{}
 	for _, item := range s.store.List() {
 		if site != "" && item.Site != site {

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -38,7 +37,7 @@ func (s *Server) catalog(w http.ResponseWriter, r *http.Request) {
 func (s *Server) list(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	limit, _ := strconv.Atoi(q.Get("limit"))
-	page, err := s.service.List(q.Get("site"), q.Get("state"), strings.ToLower(q.Get("tag")), limit)
+	page, err := s.service.List(q.Get("site"), q.Get("state"), q.Get("tag"), limit)
 	if err != nil {
 		writeFailure(w, 400, err)
 		return
