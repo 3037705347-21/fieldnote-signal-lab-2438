@@ -37,7 +37,15 @@ func (s *Server) catalog(w http.ResponseWriter, r *http.Request) {
 }
 func (s *Server) list(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
-	limit, _ := strconv.Atoi(q.Get("limit"))
+	limit := 0
+	if rawLimit := strings.TrimSpace(q.Get("limit")); rawLimit != "" {
+		parsed, err := strconv.Atoi(rawLimit)
+		if err != nil {
+			writeFailure(w, http.StatusBadRequest, invalid("limit", "must be an integer"))
+			return
+		}
+		limit = parsed
+	}
 	page, err := s.service.List(q.Get("site"), q.Get("state"), strings.ToLower(q.Get("tag")), limit)
 	if err != nil {
 		writeFailure(w, 400, err)
