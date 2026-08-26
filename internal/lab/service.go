@@ -86,7 +86,9 @@ func (s *Service) Review(id string, input ReviewInput) (Observation, error) {
 	if err != nil {
 		return Observation{}, err
 	}
-	item.Labels = nil
+	// Only refresh the review record; keep the existing labels, state, and
+	// all other captured fields intact so a re-review (even one that only
+	// edits notes) cannot rebuild an incomplete observation.
 	item.Review = &Review{Verdict: strings.TrimSpace(input.Verdict), Confidence: input.Confidence, Notes: strings.TrimSpace(input.Notes), ReviewedAt: nowUTC()}
 	item.State = StateReviewed
 	item.UpdatedAt = nowUTC()
